@@ -58,6 +58,21 @@ python app.py
 
 The web application will be available at `http://127.0.0.1:5000`.
 
+## 🧠 Model & Dataset
+
+This project uses the **HAM10000** dataset and pre-trained ResNet50 weights.
+
+> ⚠️ To save repository size, we have **not included the dataset and model weights** in this repo.
+
+You must download these manually:
+
+- 📁 **Dataset (HAM10000)**: [Kaggle - HAM10000 Skin Lesion Dataset](https://www.kaggle.com/datasets/kmader/skin-cancer-mnist-ham10000)
+- 🧠 **Trained Model (`model.h5`)**: [Google Drive Link Here](#)
+
+Place:
+- dataset in `ham10000/`
+- model in `models/model.h5`
+
 ## Usage
 
 1. Open the web application in your browser (`http://127.0.0.1:5000`).
