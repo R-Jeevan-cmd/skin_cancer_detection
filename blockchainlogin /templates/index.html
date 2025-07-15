@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MetaMask Login</title>
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+</head>
+<body>
+    <h2>Login with MetaMask</h2>
+    <button onclick="loginWithMetaMask()">Login</button>
+
+    <script>
+        async function loginWithMetaMask() {
+            if (typeof window.ethereum !== "undefined") {
+                try {
+                    const web3 = new Web3(window.ethereum);
+                    await window.ethereum.request({ method: "eth_requestAccounts" });
+                    const accounts = await web3.eth.getAccounts();
+                    const userAddress = accounts[0];
+
+                    if (!userAddress) {
+                        alert("MetaMask account not found!");
+                        return;
+                    }
+
+                    const message = "Sign this message to log in";
+                    const signature = await web3.eth.personal.sign(message, userAddress, "");
+
+                    const response = await fetch("/verify-login", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ address: userAddress, message, signature })
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        window.location.href = data.redirect;  // Redirect to welcome page
+                    } else {
+                        const errorData = await response.json();
+                        alert("Login failed: " + errorData.error);
+                    }
+                } catch (error) {
+                    console.error("Error logging in with MetaMask:", error);
+                    alert("Something went wrong. Check the console for details.");
+                }
+            } else {
+                alert("MetaMask is not installed!");
+            }
+        }
+    </script>
+</body>
+</html>

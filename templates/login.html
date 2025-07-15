@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blockchain Login - Skin Cancer Detection</title>
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+    <div class="container mx-auto p-4 max-w-3xl">
+        <div class="bg-white p-8 rounded-lg shadow-lg mb-8 mt-16">
+            <h1 class="text-4xl font-bold text-center mb-8 text-gray-800">Blockchain Enhanced Federated-Learning Framework For Privacy Preserving Smart Health Care</h1>
+            <h2 class="text-2xl font-semibold text-center mb-8 text-gray-700">Login with Blockchain</h2>
+            
+            <div class="flex items-center justify-center mb-6">
+                <button 
+                    onclick="loginWithMetaMask()" 
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg focus:outline-none focus:shadow-outline transition duration-300 ease-in-out transform hover:scale-105">
+                    Connect with MetaMask
+                </button>
+            </div>
+            
+            <div id="status" class="text-center text-gray-600 hidden">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+                <p id="statusMessage">Connecting to MetaMask...</p>
+            </div>
+        </div>
+        
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <h3 class="text-xl font-semibold mb-4">How it works:</h3>
+            <ol class="list-decimal pl-6 space-y-2">
+                <li>You need to have MetaMask installed in your browser</li>
+                <li>Click the "Connect with MetaMask" button</li>
+                <li>Confirm the connection in your MetaMask wallet</li>
+                <li>Sign the message to authenticate</li>
+                <li>Once authenticated, you'll be redirected to the skin cancer detection tool</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        async function loginWithMetaMask() {
+            const statusDiv = document.getElementById('status');
+            const statusMessage = document.getElementById('statusMessage');
+            
+            statusDiv.classList.remove('hidden');
+            
+            if (typeof window.ethereum !== "undefined") {
+                try {
+                    statusMessage.textContent = "Requesting account access...";
+                    const web3 = new Web3(window.ethereum);
+                    await window.ethereum.request({ method: "eth_requestAccounts" });
+                    const accounts = await web3.eth.getAccounts();
+                    const userAddress = accounts[0];
+
+                    if (!userAddress) {
+                        statusDiv.classList.add('hidden');
+                        alert("MetaMask account not found!");
+                        return;
+                    }
+
+                    statusMessage.textContent = "Please sign the message in MetaMask...";
+                    const message = "Sign this message to authenticate with Skin Cancer Detection System";
+                    const signature = await web3.eth.personal.sign(message, userAddress, "");
+
+                    statusMessage.textContent = "Verifying signature...";
+                    const response = await fetch("/verify-login", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ address: userAddress, message, signature })
+                    });
+
+                    if (response.ok) {
+                        statusMessage.textContent = "Authentication successful! Redirecting...";
+                        const data = await response.json();
+                        window.location.href = data.redirect;  // Redirect to detection page
+                    } else {
+                        statusDiv.classList.add('hidden');
+                        const errorData = await response.json();
+                        alert("Login failed: " + errorData.error);
+                    }
+                } catch (error) {
+                    statusDiv.classList.add('hidden');
+                    console.error("Error logging in with MetaMask:", error);
+                    alert("Something went wrong. Check the console for details.");
+                }
+            } else {
+                statusDiv.classList.add('hidden');
+                alert("MetaMask is not installed! Please install MetaMask to use this application.");
+            }
+        }
+    </script>
+</body>
+</html> 

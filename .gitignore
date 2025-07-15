@@ -1,0 +1,6 @@
+ham10000/
+uploads/
+*.h5
+__pycache__/
+*.pyc
+.DS_Store

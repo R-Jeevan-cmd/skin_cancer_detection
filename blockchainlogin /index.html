@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MetaMask Login</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.10.0/web3.min.js"></script>
+</head>
+<body>
+    <h2>Login with MetaMask</h2>
+    <button id="loginButton">Login with MetaMask</button>
+    <p id="status"></p>
+
+    <script>
+        const loginButton = document.getElementById("loginButton");
+        const statusText = document.getElementById("status");
+
+        async function loginWithMetaMask() {
+            if (!window.ethereum) {
+                alert("MetaMask not detected. Please install MetaMask.");
+                return;
+            }
+
+            const web3 = new Web3(window.ethereum);
+            await window.ethereum.request({ method: "eth_requestAccounts" });
+            const accounts = await web3.eth.getAccounts();
+            const userAddress = accounts[0];
+
+            const message = "Sign this message to log in";  // Message to sign
+            const signature = await web3.eth.personal.sign(message, userAddress, "");
+
+            const response = await fetch("http://127.0.0.1:5000/verify-login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ address: userAddress, message, signature })
+            });
+
+            const result = await response.json();
+            if (result.message) {
+                statusText.innerText = "✅ Login Successful: " + userAddress;
+            } else {
+                statusText.innerText = "❌ Login Failed";
+            }
+        }
+
+        loginButton.addEventListener("click", loginWithMetaMask);
+    </script>
+</body>
+</html>
