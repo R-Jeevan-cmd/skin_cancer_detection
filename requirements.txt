@@ -1,0 +1,11 @@
+tensorflow
+pandas
+numpy
+opencv-python
+scipy
+tqdm
+scikit-learn
+seaborn
+flask
+flask-cors
+web3

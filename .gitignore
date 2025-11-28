@@ -1,0 +1,23 @@
+# Python cache
+__pycache__/
+
+# Virtual environment
+venv/
+
+# Dataset folders
+data/
+ham10000/
+uploads/
+samples/
+
+# Machine learning models
+models/
+
+# Blockchain data
+blockchain_data/
+
+# Local files
+.DS_Store
+
+# Flask secret environment variables
+.env
